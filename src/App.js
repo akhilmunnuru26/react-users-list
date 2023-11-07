@@ -32,6 +32,7 @@ const App = () => {
     const [buttonStatus,setButtonStatus] = useState(true)
     const [usersData,setUsersData] = useState([])
     const [update,setUpdate] = useState(false)
+    const [isUserExist,setIsUserExist] = useState(false)
 
     useEffect(()=>{
         getData()
@@ -75,7 +76,7 @@ const App = () => {
 
     }
 
-    let isExist = false
+    
     
     
 
@@ -128,7 +129,8 @@ const App = () => {
     </tbody>
   </table>
   </div>
-)
+) 
+    let isExist = false
 
     const updateUserData = async (event) => {
         event.preventDefault()
@@ -174,6 +176,7 @@ const App = () => {
                 <div className="col ml-5 input-container form-floating p-0 pt-1 mb-3 mt-3">
                     <input type="text" onChange={(e) => setFirstName(e.target.value)} value={firstName} name="firstName" placeholder='Enter First Name' className="form-control input-element" id="First Name"  />
                     <label   htmlFor="First Name" >First Name</label>
+
                 </div>
                 <div className="col input-container form-floating p-0 pt-1 mb-3 mt-3">
                     <input onChange={(e) => setLastName(e.target.value)}  value={lastName} className="form-control input-element" id="Last Name" placeholder='Enter last Name' name="lastName"/>
@@ -232,7 +235,8 @@ const App = () => {
             <button className="submit-btn" type='submit'>Update</button>
         </form>
     )
- 
+        
+    
 
     const onSubmitForm = async (e) => {
         e.preventDefault()
@@ -241,19 +245,22 @@ const App = () => {
 
         usersData.forEach((user) => {
             if( user.firstName === firstName ||  user.email === email || phoneNumber === user.phoneNumber){
-                     isExist = true
+                    setIsUserExist(true)
+                    isExist = true
                      return
+                }else{
+                    setIsUserExist(false)
+                    isExist = false
+                    return
                 }
-                isExist = false
-                 return
         })
-     
+        
         if (isExist){
-            alert("User Already Exist!!")
             return
         }else{
           await axios.post("https://6543758001b5e279de206892.mockapi.io/api/v1/UserData",{firstName,lastName,email,phoneNumber,visitType,provider,appDate,appTime}).then(()=> getData())
         }
+
         setFirstName('')
         setLastName('')
         setEmail('')
@@ -276,6 +283,9 @@ const App = () => {
     return(
         <div className="container">
             {update ? renderUpdateForm() : renderForm()}
+            {isUserExist &&  <div class="alert alert-danger">
+                <strong>Danger!</strong> User Already Exist.
+            </div>}
             {renderTable()}
         </div>
     ) 
